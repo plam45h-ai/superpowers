@@ -170,11 +170,6 @@ export default function BrainstormCompanion() {
     }
   }, [activePreset]);
 
-  // Update mock iframe when code changes
-  useEffect(() => {
-    updateIframe();
-  }, [htmlCode]);
-
   // Listen for message events emitted from the sandboxed iframe
   useEffect(() => {
     const handleIframeMessage = (event: MessageEvent) => {
@@ -186,17 +181,6 @@ export default function BrainstormCompanion() {
     window.addEventListener('message', handleIframeMessage);
     return () => window.removeEventListener('message', handleIframeMessage);
   }, []);
-
-  const updateIframe = () => {
-    if (iframeRef.current) {
-      const doc = iframeRef.current.contentDocument || iframeRef.current.contentWindow?.document;
-      if (doc) {
-        doc.open();
-        doc.write(htmlCode);
-        doc.close();
-      }
-    }
-  };
 
   const pushWsLog = (type: 'send' | 'recv', event: any) => {
     const newLog = {
@@ -214,7 +198,10 @@ export default function BrainstormCompanion() {
 
   const triggerReload = () => {
     pushWsLog('recv', { type: 'reload' });
-    updateIframe();
+    // Resetting iframe source via a simple temporary toggle or refreshing the srcDoc state
+    const original = htmlCode;
+    setHtmlCode('');
+    setTimeout(() => setHtmlCode(original), 50);
   };
 
   const handleCopy = () => {
@@ -307,10 +294,10 @@ export default function BrainstormCompanion() {
               </span>
             </div>
             <iframe
-              ref={iframeRef}
               title="Visual Companion Iframe Sandbox"
               className="flex-1 w-full bg-white border-none"
               sandbox="allow-scripts"
+              srcDoc={htmlCode || undefined}
             />
           </div>
 
