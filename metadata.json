@@ -1,0 +1,6 @@
+{
+  "name": "Superpowers Agent Console",
+  "description": "An interactive workspace, skill explorer, and visual companion for the Superpowers coding agent plugins",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
